@@ -1,0 +1,18 @@
+[theme]
+primaryColor = "purple"
+backgroundColor = "MintCream"
+secondaryBackgroundColor = "Plum"
+toolbarMode = "minimal"
+
+#[client]
+#showSidebarNavigation = false
+#
+#[server]
+#runOnSave = true
+#allowRunOnSave = true
+
+[theme.sidebar]
+textColor = "green"
+primaryColor = "#1fb286"
+backgroundColor = "#f5fffa"
+secondaryBackgroundColor = "white"

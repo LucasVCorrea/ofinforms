@@ -1,0 +1,20 @@
+streamlit~=1.44.1
+plotly~=6.0.1
+pandas~=2.2.3
+numpy~=2.2.5
+seaborn
+openpyxl
+xlsxwriter
+PyYAML~=6.0.2
+
+# Autenticación y Google Drive API
+google-api-python-client~=2.171.0
+google-auth>=2.28.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.2.0
+
+# Streamlit extras
+streamlit-extras
+protobuf~=5.29.4
+
+pytz~=2025.2
