@@ -326,3 +326,311 @@ def generar_docx_informe(
     # GUARDAR
     # =====================================================
     doc.save(ruta_docx)
+
+
+def generar_docx_bloque_lanus(
+        ruta_docx,
+        mes_seleccionado,
+        anio_elegido,
+        detalle_infracciones_selected,
+        resumen_general_selected,
+        semaforo_selected,
+        movil_selected,
+        cinemometro_selected,
+        manual_selected,
+        recaudacion_selected,
+        actividad_juzgados_selected,
+        sugit_altas_selected,
+        sugit_bajas_selected,
+):
+    doc = Document()
+
+    # =====================================================
+    # II. CLASIFICACIÓN DE INFRACCIONES
+    # =====================================================
+    doc.add_heading(
+        f"II. Clasificación de las infracciones de Tránsito / Cuadro Tarifario. {mes_seleccionado} {anio_elegido}",
+        level=1
+    )
+
+    doc.add_paragraph(
+        "El informe que se presenta a continuación tiene como objetivo exponer una tabla que detalla "
+        "la clasificación de las infracciones de tránsito y su correspondiente cuadro tarifario. "
+        "Esta información proporciona detalles precisos sobre, el valor de la multa en unidades fijas "
+        "y su equivalente en pesos."
+    )
+
+    df = detalle_infracciones_selected.drop(
+        columns=["Observaciones", "Año", "Mes"],
+        errors="ignore"
+    )
+
+    tabla = doc.add_table(rows=1, cols=len(df.columns))
+    tabla.style = "Table Grid"
+
+    hdr = tabla.rows[0].cells
+    for i, col in enumerate(df.columns):
+        hdr[i].text = col
+
+    for _, row in df.iterrows():
+        c = tabla.add_row().cells
+        for i, col in enumerate(df.columns):
+            c[i].text = str(row[col])
+
+    # =====================================================
+    # II. PROCESAMIENTO DE INFRACCIONES
+    # =====================================================
+    doc.add_heading("II. Procesamiento de infracciones", level=1)
+
+    doc.add_paragraph(
+        "El equipo técnico de la Universidad Nacional de La Matanza ha desplegado un conjunto"
+        "integral de procedimientos de adquisición de imágenes, diseñados para optimizar el"
+        "funcionamiento del sistema de registro de infracciones de tránsito."
+        "Estos procedimientos abarcan una variedad de tecnologías, cámaras de diferente tipo"
+        "de infracción instaladas en semáforos."
+        "En paralelo, se ha establecido un sólido sistema de registro de infracciones de tránsito"
+        "que se integra perfectamente con los diversos mecanismos de adquisición de imágenes. Este"
+        "sistema se caracteriza por su precisión y confiabilidad en la recopilación de datos, lo que"
+        "permite una gestión eficiente de las infracciones viales."
+        "Para asegurar la integridad y precisión del proceso, se ha implementado un sistema de"
+        "fiscalización que abarca todas las etapas del sistema. Este proceso incluye la verificación"
+        "detallada de la calibración y el funcionamiento de los dispositivos de captura de imágenes, así"
+        "como una revisión exhaustiva de los datos recopilados. Además, se lleva a cabo una validación"
+        "rigurosa de la información registrada, junto con la detección y corrección de posibles"
+        "discrepancias o irregularidades."
+        "Gracias a este enfoque integral de fiscalización, se han alcanzado resultados notables"
+        "en términos de mejora continua y eficacia operativa."
+        "La combinación de diversos procedimientos de adquisición de imágenes, un sistema de"
+        "registro de presunciones bien estructurado y un proceso detallado de fiscalización ha sido"
+        "fundamental para lograr resultados destacados en la gestión del tráfico y la seguridad vial en"
+        "los municipios y sus alrededores."
+    )
+
+    doc.add_heading(
+        "III.I Descripción de las etapas del procesamiento de lo producido.",
+        level=2
+    )
+
+    df = resumen_general_selected.drop(
+        columns=["Año", "Mes", "Valor uf", "Cantidad de presunciones captadas"],
+        errors="ignore"
+    )
+
+    tabla = doc.add_table(rows=1, cols=len(df.columns))
+    tabla.style = "Table Grid"
+
+    hdr = tabla.rows[0].cells
+    for i, col in enumerate(df.columns):
+        hdr[i].text = col
+
+    for _, row in df.iterrows():
+        c = tabla.add_row().cells
+        for i, col in enumerate(df.columns):
+            c[i].text = str(row[col])
+
+    # =====================================================
+    # V. EFICACIA DE LOS PROCEDIMIENTOS
+    # =====================================================
+    doc.add_heading(
+        f"V. Eficacia de los procedimientos {mes_seleccionado} {anio_elegido} Lanús.",
+        level=1
+    )
+
+    doc.add_paragraph(
+        "En relación con la generación de ingresos, es importante destacar que los pagos realizados "
+        "por la cancelación de las infracciones registradas por el sistema de captación de la "
+        "Universidad Nacional de La Matanza están sujetos a una serie de procedimientos de control "
+        "para garantizar su adecuada gestión, como así también la integración con los diferentes "
+        "sistemas de gestión de infracciones Nacionales y Provinciales. Estos procedimientos se "
+        "traducen en una recopilación detallada de los montos recaudados por el Municipio, los cuales "
+        "se presentan a continuación en forma de cuadros y gráficos para una mejor comprensión y "
+        "análisis."
+        "A continuación, se detallan los montos recaudados por el Municipio, según los diferentes "
+        "procedimientos de control aplicados a los pagos efectuados por la cancelación de las "
+        "infracciones registradas por el sistema de captación de la Universidad Nacional de la "
+        "Matanza."
+        "Estos datos reflejan la eficacia de los procedimientos de control implementados en la "
+        "gestión de los pagos por cancelación de infracciones, proporcionando una visión clara y "
+        "precisa de los ingresos generados. La transparencia en la presentación de esta información "
+        "es fundamental para una adecuada rendición de cuentas y una gestión financiera responsable "
+        "porparte del Municipio y la Universidad de La Matanza."
+    )
+
+    # =====================================================
+    # V.I SEMÁFORO
+    # =====================================================
+    doc.add_heading(
+        "V.I Descripción de la producción por punto de Infracción para las cámaras de tipo Semáforo.",
+        level=2
+    )
+
+    df = semaforo_selected.drop(columns=["Mes", "Año"], errors="ignore")
+    tabla = doc.add_table(rows=1, cols=len(df.columns))
+    tabla.style = "Table Grid"
+
+    hdr = tabla.rows[0].cells
+    for i, col in enumerate(df.columns):
+        hdr[i].text = col
+
+    for _, row in df.iterrows():
+        c = tabla.add_row().cells
+        for i, col in enumerate(df.columns):
+            c[i].text = str(row[col])
+
+    # =====================================================
+    # V.II MÓVIL
+    # =====================================================
+    doc.add_heading(
+        "V.II Descripción de la producción por punto de Infracción para las cámaras de tipo Móvil.",
+        level=2
+    )
+
+    df = movil_selected.drop(columns=["Mes", "Año"], errors="ignore")
+    tabla = doc.add_table(rows=1, cols=len(df.columns))
+    tabla.style = "Table Grid"
+
+    hdr = tabla.rows[0].cells
+    for i, col in enumerate(df.columns):
+        hdr[i].text = col
+
+    for _, row in df.iterrows():
+        c = tabla.add_row().cells
+        for i, col in enumerate(df.columns):
+            c[i].text = str(row[col])
+
+    # =====================================================
+    # V.III CINEMÓMETRO
+    # =====================================================
+    doc.add_heading(
+        "V.III Descripción de la producción por punto de Infracción para las cámaras de tipo Cinemómetro.",
+        level=2
+    )
+
+    df = cinemometro_selected.drop(columns=["Mes", "Año"], errors="ignore")
+    tabla = doc.add_table(rows=1, cols=len(df.columns))
+    tabla.style = "Table Grid"
+
+    hdr = tabla.rows[0].cells
+    for i, col in enumerate(df.columns):
+        hdr[i].text = col
+
+    for _, row in df.iterrows():
+        c = tabla.add_row().cells
+        for i, col in enumerate(df.columns):
+            c[i].text = str(row[col])
+
+    # =====================================================
+    # V.IV MANUAL
+    # =====================================================
+    doc.add_heading(
+        "V. IV. Descripción de la producción por punto de Infracción para las cámaras de tipo Agente de Tránsito.",
+        level=2
+    )
+
+    df = manual_selected[
+        ["Ubicación física", "Tipo de cámara", "Infracciones por mes", "Varias"]
+    ]
+
+    tabla = doc.add_table(rows=1, cols=len(df.columns))
+    tabla.style = "Table Grid"
+
+    hdr = tabla.rows[0].cells
+    for i, col in enumerate(df.columns):
+        hdr[i].text = col
+
+    for _, row in df.iterrows():
+        c = tabla.add_row().cells
+        for i, col in enumerate(df.columns):
+            c[i].text = str(row[col])
+    # =====================================================
+    # VI. DETALLE DE LOS MEDIOS DE PAGO
+    # =====================================================
+    doc.add_heading(
+        f"VI. Detalle de los medios de pagos utilizados por el municipio de Lanús - {mes_seleccionado} {anio_elegido}",
+        level=2
+    )
+
+    df = recaudacion_selected.drop(columns=["Mes", "Año"], errors="ignore")
+
+    tabla = doc.add_table(rows=1, cols=len(df.columns))
+    tabla.style = "Table Grid"
+
+    hdr = tabla.rows[0].cells
+    for i, col in enumerate(df.columns):
+        hdr[i].text = col
+
+    for _, row in df.iterrows():
+        c = tabla.add_row().cells
+        for i, col in enumerate(df.columns):
+            c[i].text = str(row[col])
+    # =====================================================
+    # VII. DETALLES DE ACTAS
+    # =====================================================
+    doc.add_heading(
+        f"VII. Detalles de actas del mes de {mes_seleccionado} {anio_elegido}",
+        level=1
+    )
+    doc.add_heading(
+        f"VII.I Detalle de Actividad de los Juzgados mes de {mes_seleccionado} {anio_elegido}",
+        level=2
+    )
+
+    for juzgado in sorted(actividad_juzgados_selected["Juzgado"].unique()):
+        doc.add_paragraph(f"Juzgado {juzgado}", style="List Bullet")
+
+        df = actividad_juzgados_selected[
+            actividad_juzgados_selected["Juzgado"] == juzgado
+            ].drop(columns=["Año", "Mes"], errors="ignore")
+
+        tabla = doc.add_table(rows=1, cols=len(df.columns))
+        tabla.style = "Table Grid"
+
+        hdr = tabla.rows[0].cells
+        for i, col in enumerate(df.columns):
+            hdr[i].text = col
+
+        for _, row in df.iterrows():
+            c = tabla.add_row().cells
+            for i, col in enumerate(df.columns):
+                c[i].text = str(row[col])
+    doc.add_heading(
+        f"VII.II Detalle del SUGIT Altas {mes_seleccionado} {anio_elegido}",
+        level=2
+    )
+
+    df = sugit_altas_selected.drop(columns=["Mes", "Año"], errors="ignore")
+
+    tabla = doc.add_table(rows=1, cols=len(df.columns))
+    tabla.style = "Table Grid"
+
+    hdr = tabla.rows[0].cells
+    for i, col in enumerate(df.columns):
+        hdr[i].text = col
+
+    for _, row in df.iterrows():
+        c = tabla.add_row().cells
+        for i, col in enumerate(df.columns):
+            c[i].text = str(row[col])
+    doc.add_heading(
+        f"VII.III Detalle del SUGIT Bajas {mes_seleccionado} {anio_elegido}",
+        level=2
+    )
+
+    df = sugit_bajas_selected.drop(columns=["Mes", "Año"], errors="ignore")
+
+    tabla = doc.add_table(rows=1, cols=len(df.columns))
+    tabla.style = "Table Grid"
+
+    hdr = tabla.rows[0].cells
+    for i, col in enumerate(df.columns):
+        hdr[i].text = col
+
+    for _, row in df.iterrows():
+        c = tabla.add_row().cells
+        for i, col in enumerate(df.columns):
+            c[i].text = str(row[col])
+
+    # =====================================================
+    # GUARDAR
+    # =====================================================
+    doc.save(ruta_docx)

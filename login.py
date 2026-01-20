@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from Functions.functions import generar_docx_informe
+from Functions.functions import generar_docx_informe, generar_docx_bloque_lanus
 from DataManager.file_reader import get_resumen_mensual_dataframe, get_info_camaras, get_resumen_infracciones, \
     get_infracciones_por_camara, get_recaudacion_detallada, get_canales_de_pago, get_recaudacion, \
     get_movimientos_juzgados, get_actas_juzgados_bajas, get_valores_infracciones, get_actas_juzgados_altas, \
@@ -8,7 +8,8 @@ from DataManager.file_reader import get_resumen_mensual_dataframe, get_info_cama
 from Functions.functions import get_meses_ordenados
 from PlotManager.plot_getter import get_stages_barplot, get_activity_by_judge, get_seaborn_barplot_resumee, \
     get_seaborn_barplot_judge_activity, get_actas_by_infraccion, get_seaborn_barplot_acta_por_tipo, \
-    get_piechart_payments, get_seaborn_piechart_payments, get_barplot_etapas_lanus, get_tipos_infraccion_actas
+    get_piechart_payments, get_seaborn_piechart_payments, get_barplot_etapas_lanus, get_tipos_infraccion_actas, \
+    get_tipos_camaras_actas
 
 st.set_page_config(layout="wide")
 cola, colb = st.columns(2)
@@ -287,18 +288,43 @@ else:
             manual_lanus["Mes"] = manual_lanus["Mes"].str.strip().str.capitalize()
 
             recaudacion_lanus = dfs.get("recaudacion_lanus")
+            recaudacion_lanus.columns = (
+                recaudacion_lanus.columns
+                .str.strip()
+                .map(str.capitalize)
+            )
+            recaudacion_lanus["Mes"] = recaudacion_lanus["Mes"].str.strip().str.capitalize()
 
             sugit_altas = dfs.get("SUGIT ALTAS_lanus")
+            sugit_altas.columns = (
+                sugit_altas.columns
+                .str.strip()
+                .map(str.capitalize)
+            )
+            sugit_altas["Mes"] = sugit_altas["Mes"].str.strip().str.capitalize()
 
             sugit_bajas = dfs.get("SUGIT BAJAS_lanus")
+            sugit_bajas.columns = (
+                sugit_bajas.columns
+                .str.strip()
+                .map(str.capitalize)
+            )
+            sugit_bajas["Mes"] = sugit_bajas["Mes"].str.strip().str.capitalize()
 
             actividad_juzgados = dfs.get("Actividad Juzgados_lanus")
+            actividad_juzgados.columns = (
+                actividad_juzgados.columns
+                .str.strip()
+                .map(str.capitalize)
+            )
+            actividad_juzgados["Mes"] = actividad_juzgados["Mes"].str.strip().str.capitalize()
 
     st.markdown(
         f"#### II. Clasificación de las infracciones de Tránsito / Cuadro Tarifario. {mes_seleccionado} {anio_elegido}")
     st.markdown(
         f"###### El informe que se presenta a continuación tiene como objetivo exponer una tabla que detalla la clasificación de las infracciones de tránsito y su correspondiente cuadro tarifario. Esta información proporciona detalles precisos sobre, el valor de la multa en unidades fijas y su equivalente en pesos.")
-    st.dataframe(detalle_infracciones_lanus.loc[detalle_infracciones_lanus["Mes"] == mes_seleccionado].drop(
+    st.dataframe(detalle_infracciones_lanus.loc[detalle_infracciones_lanus["Año"] == anio_elegido].loc[
+        detalle_infracciones_lanus["Mes"] == mes_seleccionado].drop(
         columns=["Observaciones", "Año", "Mes"]), hide_index=True)
 
     st.markdown(
@@ -306,48 +332,167 @@ else:
     st.markdown(
         f"###### El equipo técnico de la Universidad Nacional de La Matanza ha desplegado un conjuntointegral de procedimientos de adquisición de imágenes, diseñados para optimizar elfuncionamiento del sistema de registro de infracciones de tránsito.Estos procedimientos abarcan una variedad de tecnologías, cámaras de diferente tipode infracción instaladas en semáforos.En paralelo, se ha establecido un sólido sistema de registro de infracciones de tránsitoque se integra perfectamente con los diversos mecanismos de adquisición de imágenes. Estesistema se caracteriza por su precisión y confiabilidad en la recopilación de datos, lo quepermite una gestión eficiente de las infracciones viales.Para asegurar la integridad y precisión del proceso, se ha implementado un sistema defiscalización que abarca todas las etapas del sistema. Este proceso incluye la verificacióndetallada de la calibración y el funcionamiento de los dispositivos de captura de imágenes, asícomo una revisión exhaustiva de los datos recopilados. Además, se lleva a cabo una validaciónrigurosa de la información registrada, junto con la detección y corrección de posiblesdiscrepancias o irregularidades.Gracias a este enfoque integral de fiscalización, se han alcanzado resultados notablesen términos de mejora continua y eficacia operativa.La combinación de diversos procedimientos de adquisición de imágenes, un sistema deregistro de presunciones bien estructurado y un proceso detallado de fiscalización ha sidofundamental para lograr resultados destacados en la gestión del tráfico y la seguridad vial enlos municipios y sus alrededores.")
     st.markdown("###### III.I Descripción de las etapas del procesamiento de lo producido.")
-    data_to_plot_lanus = resumen_general_lanus.loc[resumen_general_lanus["Mes"] == mes_seleccionado].drop(
+    data_to_plot_lanus = resumen_general_lanus.loc[resumen_general_lanus["Año"] == anio_elegido].loc[
+        resumen_general_lanus["Mes"] == mes_seleccionado].drop(
         columns=["Año", "Mes", "Valor uf", "Cantidad de presunciones captadas"])
     col_left, col_center, col_right = st.columns([1, 4, 1])
     with col_center:
         st.dataframe(data_to_plot_lanus, hide_index=True)
         st.plotly_chart(get_barplot_etapas_lanus(data_to_plot_lanus, mes_seleccionado))
-    st.markdown(f"#### V. Eficacia de los procedimientos {mes_seleccionado} 2025 Lanús.")
+    st.markdown(f"#### V. Eficacia de los procedimientos {mes_seleccionado} {anio_elegido} Lanús.")
     st.markdown(
         "###### En relación con la generación de ingresos, es importante destacar que los pagos realizados por la cancelación de las infracciones registradas por el sistema de captación de la Universidad Nacional de La Matanza están sujetos a una serie de procedimientos de control para garantizar su adecuada gestión, como así también la integración con los diferentes sistemas de gestión de infracciones Nacionales y Provinciales. Estos procedimientos se traducen en una recopilación detallada de los montos recaudados por el Municipio, los cuales se presentan a continuación en forma de cuadros y gráficos para una mejor comprensión y análisis.A continuación, se detallan los montos recaudados por el Municipio, según los diferentes procedimientos de control aplicados a los pagos efectuados por la cancelación de las infracciones registradas por el sistema de captación de la Universidad Nacional de la Matanza.Estos datos reflejan la eficacia de los procedimientos de control implementados en la gestión de los pagos por cancelación de infracciones, proporcionando una visión clara y precisa de los ingresos generados. La transparencia en la presentación de esta información es fundamental para una adecuada rendición de cuentas y una gestión financiera responsable porparte del Municipio y la Universidad de La Matanza.")
     st.markdown(f"###### V.I Descripción de la producción por punto de Infracción para las cámaras de tipo Semáforo.")
-    st.dataframe(semaforo_lanus.loc[semaforo_lanus["Mes"] == mes_seleccionado].drop(columns=["Mes", "Año"]),
-                 hide_index=True)
+    st.dataframe(
+        semaforo_lanus.loc[semaforo_lanus["Año"] == anio_elegido].loc[semaforo_lanus["Mes"] == mes_seleccionado].drop(
+            columns=["Mes", "Año"]),
+        hide_index=True)
     st.markdown(f"###### V.II Descripción de la producción por punto de Infracción para las cámaras de tipo Móvil.")
 
     col_left, col_center, col_right = st.columns([1, 4, 1])
     with col_center:
-        st.dataframe(movil_lanus.loc[movil_lanus["Mes"] == mes_seleccionado].drop(columns=["Mes", "Año"]),
-                     hide_index=True)
+        st.dataframe(
+            movil_lanus.loc[movil_lanus["Año"] == anio_elegido].loc[movil_lanus["Mes"] == mes_seleccionado].drop(
+                columns=["Mes", "Año"]),
+            hide_index=True)
     st.markdown(
         f"###### V.III Descripción de la producción por punto de Infracción para las cámaras de tipo Cinemómetro.")
     col_left, col_center, col_right = st.columns([1, 4, 1])
     with col_center:
-        st.dataframe(cinemometro_lanus.loc[cinemometro_lanus["Mes"] == mes_seleccionado].drop(columns=["Mes", "Año"]),
+        st.dataframe(cinemometro_lanus.loc[cinemometro_lanus["Año"] == anio_elegido].loc[
+                         cinemometro_lanus["Mes"] == mes_seleccionado].drop(columns=["Mes", "Año"]),
                      hide_index=True)
     st.markdown(
         f"###### V. IV. Descripción de la producción por punto de Infracción para las cámaras de tipo Agente de Tránsito.")
     col_left, col_center, col_right = st.columns([1, 4, 1])
     with col_center:
-        st.dataframe(manual_lanus.loc[manual_lanus["Mes"] == mes_seleccionado][
+        st.dataframe(manual_lanus.loc[manual_lanus["Año"] == anio_elegido].loc[manual_lanus["Mes"] == mes_seleccionado][
                          ["Ubicación física", "Tipo de cámara", "Infracciones por mes", "Varias"]], hide_index=True)
 
     melted_semaforo = pd.melt(semaforo_lanus.loc[semaforo_lanus["Mes"] == mes_seleccionado].drop(
-        columns=["Mes", "Año", "Infracciones por mes", "Ubicación física", "Tipo de cámara", "Facturacion por equipo"]))
+        columns=["Mes", "Año", "Infracciones por mes", "Ubicación física", "Facturacion por equipo"]))
     melted_cinemometro = pd.melt(cinemometro_lanus.loc[cinemometro_lanus["Mes"] == mes_seleccionado].drop(
-        columns=["Mes", "Año", "Infracciones por mes", "Ubicación física", "Tipo de cámara", "Facturación por equipo"]))
+        columns=["Mes", "Año", "Infracciones por mes", "Ubicación física", "Facturación por equipo"]))
     melted_movil = pd.melt(movil_lanus.loc[movil_lanus["Mes"] == mes_seleccionado].drop(
-        columns=["Mes", "Año", "Infracciones por mes", "Ubicación física", "Tipo de cámara", "Facturación por equipo"]))
+        columns=["Mes", "Año", "Infracciones por mes", "Ubicación física", "Facturación por equipo"]))
     melted_manual = pd.melt(manual_lanus.loc[manual_lanus["Mes"] == mes_seleccionado].drop(
-        columns=["Mes", "Año", "Infracciones por mes", "Ubicación física", "Tipo de cámara", "Facturacion por equipo"]))
+        columns=["Mes", "Año", "Infracciones por mes", "Ubicación física", "Facturacion por equipo"]))
 
-    concatenados = pd.concat([melted_semaforo,melted_cinemometro,melted_movil,melted_manual])
-    concatenados = concatenados.loc[concatenados["value"]>0].groupby("variable").agg({"value":["sum"]}).T.reset_index()
-    concatenados = concatenados.drop(columns = ["level_0","level_1"])
-    st.dataframe(concatenados, hide_index=True)
-    st.plotly_chart(get_tipos_infraccion_actas(concatenados,mes_seleccionado))
+    concatenados = pd.concat([melted_semaforo, melted_cinemometro, melted_movil, melted_manual])
+    concatenados_first_table = concatenados.loc[concatenados["variable"] != "Tipo de cámara"]
+    concatenados_first_table = concatenados_first_table.loc[concatenados_first_table["value"] > 0].groupby(
+        "variable").agg({"value": ["sum"]}).T.reset_index()
+    concatenados_first_table = concatenados_first_table.drop(columns=["level_0", "level_1"])
+    st.plotly_chart(get_tipos_infraccion_actas(concatenados_first_table, mes_seleccionado))
+    not_really_melted_semaforo = melted_semaforo.loc[melted_semaforo["variable"] != "Tipo de cámara"]
+    not_really_melted_semaforo["Tipo de cámara"] = "Semáforo"
+    not_really_melted_cinemometro = melted_cinemometro.loc[melted_cinemometro["variable"] != "Tipo de cámara"]
+    not_really_melted_cinemometro["Tipo de cámara"] = "Cinemómetro"
+    not_really_melted_movil = melted_movil.loc[melted_movil["variable"] != "Tipo de cámara"]
+    not_really_melted_movil["Tipo de cámara"] = "Móvil"
+    not_really_melted_manual = melted_manual.loc[melted_manual["variable"] != "Tipo de cámara"]
+    not_really_melted_manual["Tipo de cámara"] = "Varias (PDA)"
+    concatenados_2 = pd.concat(
+        [not_really_melted_semaforo, not_really_melted_cinemometro, not_really_melted_movil, not_really_melted_manual])
+    st.plotly_chart(get_tipos_camaras_actas(concatenados_2, mes_seleccionado))
+
+    st.markdown(
+        f"###### VI. Detalle de los medios de pagos utilizados por el municipio de Lanús- {mes_seleccionado} {anio_elegido}")
+    st.dataframe(recaudacion_lanus.loc[recaudacion_lanus["Mes"] == mes_seleccionado].loc[
+                     recaudacion_lanus["Año"] == anio_elegido])
+    st.markdown(
+        f"##### VII. Detalles de actas del mes de {mes_seleccionado} {anio_elegido}")
+    st.markdown(f"###### VII.I Detalle de Actividad de los Juzgados mes de {mes_seleccionado} {anio_elegido}")
+    st.write("Juzgado 1")
+    st.dataframe(actividad_juzgados.loc[actividad_juzgados["Año"] == anio_elegido].loc[
+                     actividad_juzgados["Mes"] == mes_seleccionado].loc[
+                     actividad_juzgados["Juzgado"] == 1].drop(columns=["Año", "Mes"]), hide_index=True)
+    st.write("Juzgado 2")
+
+    st.dataframe(actividad_juzgados.loc[actividad_juzgados["Año"] == anio_elegido].loc[
+                     actividad_juzgados["Mes"] == mes_seleccionado].loc[
+                     actividad_juzgados["Juzgado"] == 2].drop(columns=["Año", "Mes"]), hide_index=True)
+    st.write("Juzgado 3")
+
+    st.dataframe(actividad_juzgados.loc[actividad_juzgados["Año"] == anio_elegido].loc[
+                     actividad_juzgados["Mes"] == mes_seleccionado].loc[
+                     actividad_juzgados["Juzgado"] == 3].drop(columns=["Año", "Mes"]), hide_index=True)
+    st.write("Juzgado 4")
+
+    st.dataframe(actividad_juzgados.loc[actividad_juzgados["Año"] == anio_elegido].loc[
+                     actividad_juzgados["Mes"] == mes_seleccionado].loc[
+                     actividad_juzgados["Juzgado"] == 4].drop(columns=["Año", "Mes"]), hide_index=True)
+
+    st.markdown(f"###### VII.II Detalle del SUGIT {mes_seleccionado} {anio_elegido}")
+    st.dataframe(sugit_altas.loc[sugit_altas["Mes"] == mes_seleccionado].loc[sugit_altas["Año"] == anio_elegido],
+                 hide_index=True)
+    st.markdown(f"###### VII.III Detalle del SUGIT Bajas {mes_seleccionado} {anio_elegido}")
+
+    st.dataframe(sugit_bajas.loc[sugit_bajas["Mes"] == mes_seleccionado].loc[sugit_bajas["Año"] == anio_elegido],
+                 hide_index=True)
+    ruta_docx_bloque_lanus = f"informe_bloque_lanus_{mes_seleccionado}_{anio_elegido}.docx"
+
+    if st.button("📄 Generar Word – Bloque Lanús"):
+        generar_docx_bloque_lanus(
+            ruta_docx_bloque_lanus,
+            mes_seleccionado,
+            anio_elegido,
+            detalle_infracciones_lanus.loc[
+                detalle_infracciones_lanus["Año"] == anio_elegido
+                ].loc[
+                detalle_infracciones_lanus["Mes"] == mes_seleccionado
+                ].fillna(0),
+            resumen_general_lanus.loc[
+                resumen_general_lanus["Año"] == anio_elegido
+                ].loc[
+                resumen_general_lanus["Mes"] == mes_seleccionado
+                ].fillna(0),
+            semaforo_lanus.loc[
+                semaforo_lanus["Año"] == anio_elegido
+                ].loc[
+                semaforo_lanus["Mes"] == mes_seleccionado
+                ].fillna(0),
+            movil_lanus.loc[
+                movil_lanus["Año"] == anio_elegido
+                ].loc[
+                movil_lanus["Mes"] == mes_seleccionado
+                ].fillna(0),
+            cinemometro_lanus.loc[
+                cinemometro_lanus["Año"] == anio_elegido
+                ].loc[
+                cinemometro_lanus["Mes"] == mes_seleccionado
+                ].fillna(0),
+            manual_lanus.loc[
+                manual_lanus["Año"] == anio_elegido
+                ].loc[
+                manual_lanus["Mes"] == mes_seleccionado
+                ].fillna(0),
+            recaudacion_lanus.loc[
+                recaudacion_lanus["Año"] == anio_elegido
+                ].loc[
+                recaudacion_lanus["Mes"] == mes_seleccionado
+                ].fillna(0),
+            actividad_juzgados.loc[
+                actividad_juzgados["Año"] == anio_elegido
+                ].loc[
+                actividad_juzgados["Mes"] == mes_seleccionado
+                ].fillna(0),
+            sugit_altas.loc[
+                sugit_altas["Año"] == anio_elegido
+                ].loc[
+                sugit_altas["Mes"] == mes_seleccionado
+                ].fillna(0),
+            sugit_bajas.loc[
+                sugit_bajas["Año"] == anio_elegido
+                ].loc[
+                sugit_bajas["Mes"] == mes_seleccionado
+                ].fillna(0),
+        )
+
+        with open(ruta_docx_bloque_lanus, "rb") as f:
+            st.download_button(
+                "⬇ Descargar Word – Bloque Lanús",
+                data=f,
+                file_name=ruta_docx_bloque_lanus,
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            )

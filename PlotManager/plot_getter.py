@@ -361,7 +361,7 @@ def get_barplot_etapas_lanus(data_to_plot, mes_seleccionado):
          "Total de imágenes rechazadas por auditoría interna": "Imágenes Rechazadas por Auditoría Interna",
          "Total de imágenes validadas por el municipio": "Imágenes Validadas Por El Municipio",
          "Total de imágenes rechazadas por el municipio": "Imágenes Rechazadas Por El Municipio"})
-    fig = px.bar(data_to_plot, x="Etapa", y="Cantidad", text_auto=True)
+    fig = px.bar(data_to_plot, x="Etapa", y="Cantidad", text_auto=True, color_discrete_sequence = ["pink"])
     fig.update_traces(
         textfont=dict(color="black", size=12),
         textposition='outside'
@@ -396,7 +396,7 @@ def get_barplot_etapas_lanus(data_to_plot, mes_seleccionado):
 def get_tipos_infraccion_actas(data_to_plot, mes_seleccionado):
     data_to_plot = pd.melt(data_to_plot)
     data_to_plot = data_to_plot.loc[data_to_plot["value"] > 0]
-    fig = px.pie(data_to_plot, names="variable", values="value")
+    fig = px.pie(data_to_plot, names="variable", values="value", color_discrete_sequence=px.colors.qualitative.Pastel)
     fig.update_traces(
         textfont=dict(color="black", size=14),
     )
@@ -418,6 +418,39 @@ def get_tipos_infraccion_actas(data_to_plot, mes_seleccionado):
         ),
         title={
             'text': f"Cantidad de Actas por tipo de Infracción {mes_seleccionado} 2025- Lanús",
+            'x': 0.5,
+            'xanchor': 'center',
+            'font': dict(color='black')
+        },
+        legend_title_font=dict(color='black'),
+        height=500)
+    return fig
+
+def get_tipos_camaras_actas(data_to_plot, mes_seleccionado):
+    data_to_plot = data_to_plot.groupby("Tipo de cámara").agg({"value":["sum"]}).reset_index()
+    data_to_plot.columns = ["Tipo de cámara","Cantidad"]
+    fig = px.pie(data_to_plot, names="Tipo de cámara", values="Cantidad", color_discrete_sequence=px.colors.qualitative.Pastel2)
+    fig.update_traces(
+        textfont=dict(color="black", size=14),
+    )
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color='black'),
+        xaxis=dict(
+            title=dict(font=dict(color='black')),
+            tickfont=dict(color='black'),
+            linecolor='black',
+            gridcolor='rgba(0,0,0,0)',
+        ),
+        yaxis=dict(
+            title=dict(font=dict(color='black')),
+            tickfont=dict(color='black'),
+            linecolor='black',
+            gridcolor='rgba(0,0,0,0)',
+        ),
+        title={
+            'text': f"Representación de las Infracciones Captadas por Tipo de Cámara<br>Lanús- {mes_seleccionado} 2025",
             'x': 0.5,
             'xanchor': 'center',
             'font': dict(color='black')
