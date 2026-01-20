@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
 import seaborn as sns
@@ -44,9 +43,9 @@ def get_seaborn_barplot_acta_por_tipo(data_to_plot, mes_seleccionado, output_pat
     plt.figure(figsize=(10, 6))
     data_to_plot["value"] = data_to_plot["value"].astype(float)
     data_to_plot = data_to_plot.groupby("variable").agg({"value": ["sum"]}).reset_index()
-    data_to_plot.columns = ["variable", "value"]
+    data_to_plot.columns = ["Tipo", "Cantidad"]
 
-    data_to_plot["variable"] = data_to_plot["variable"].replace({
+    data_to_plot["Tipo"] = data_to_plot["Tipo"].replace({
         "Cruzar con luz roja": "Cruzar con luz roja",
         "Giro indebido": "Giro indebido",
         "No detenerse en linea de frenado o sobre senda peatonal": "No detenerse en linea\nde frenado o sobre\nsenda peatonal",
@@ -54,8 +53,8 @@ def get_seaborn_barplot_acta_por_tipo(data_to_plot, mes_seleccionado, output_pat
 
     sns.barplot(
         data=data_to_plot,
-        x="variable",
-        y="value",
+        x="Tipo",
+        y="Cantidad",
         color="PaleTurquoise",
         edgecolor="black",
         linewidth=0.5,
@@ -70,7 +69,7 @@ def get_seaborn_barplot_acta_por_tipo(data_to_plot, mes_seleccionado, output_pat
         else:
             text.set_text(f'{valor:.0f}')
     plt.title(
-        f"Actividad de los juzgados mes de {mes_seleccionado} 2025")
+        f"Cantidad de Actas por Tipo de Infracción\n{mes_seleccionado} 2025")
     sns.despine(top=True, right=True)
 
     plt.tight_layout()
@@ -117,12 +116,9 @@ def get_seaborn_barplot_judge_activity(data_to_plot, mes_seleccionado, output_pa
     return output_path
 
 
-
 import matplotlib.pyplot as plt
 import numpy as np
 
-import matplotlib.pyplot as plt
-import numpy as np
 
 def get_seaborn_piechart_payments(data_to_plot, mes_seleccionado, output_path):
     plt.figure(figsize=(8, 8))
@@ -202,9 +198,6 @@ def get_seaborn_piechart_payments(data_to_plot, mes_seleccionado, output_path):
     plt.close()
 
     return output_path
-
-
-
 
 
 def get_stages_barplot(data_to_plot, mes_seleccionado):
@@ -311,7 +304,8 @@ def get_actas_by_infraccion(data_to_plot, mes_seleccionado):
         height=500)
     return fig
 
-def get_piechart_payments(data_to_plot,mes_seleccionado):
+
+def get_piechart_payments(data_to_plot, mes_seleccionado):
     data_to_plot["value"] = (
         data_to_plot["value"]
         .str.replace("$", "", regex=False)
@@ -327,7 +321,6 @@ def get_piechart_payments(data_to_plot,mes_seleccionado):
         color="variable",
         color_discrete_sequence=px.colors.qualitative.Pastel
     )
-
 
     fig.update_traces(
         texttemplate="%{label}<br>$%{value:,.0f}<br>(%{percent:.1%})",
@@ -352,6 +345,79 @@ def get_piechart_payments(data_to_plot,mes_seleccionado):
         ),
         title={
             'text': f"Desglose de Pagos - {mes_seleccionado} 2025",
+            'x': 0.5,
+            'xanchor': 'center',
+            'font': dict(color='black')
+        },
+        legend_title_font=dict(color='black'),
+        height=500)
+    return fig
+
+
+def get_barplot_etapas_lanus(data_to_plot, mes_seleccionado):
+    data_to_plot = pd.melt(data_to_plot, var_name="Etapa", value_name="Cantidad")
+    data_to_plot["Etapa"] = data_to_plot["Etapa"].replace(
+        {"Total de imágenes aceptadas por auditoría interna": "Imágenes Aceptadas por Auditoría Interna",
+         "Total de imágenes rechazadas por auditoría interna": "Imágenes Rechazadas por Auditoría Interna",
+         "Total de imágenes validadas por el municipio": "Imágenes Validadas Por El Municipio",
+         "Total de imágenes rechazadas por el municipio": "Imágenes Rechazadas Por El Municipio"})
+    fig = px.bar(data_to_plot, x="Etapa", y="Cantidad", text_auto=True)
+    fig.update_traces(
+        textfont=dict(color="black", size=12),
+        textposition='outside'
+    )
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color='black'),
+        xaxis=dict(
+            title=dict(font=dict(color='black')),
+            tickfont=dict(color='black'),
+            linecolor='black',
+            gridcolor='rgba(0,0,0,0)',
+        ),
+        yaxis=dict(
+            title=dict(font=dict(color='black')),
+            tickfont=dict(color='black'),
+            linecolor='black',
+            gridcolor='rgba(0,0,0,0)',
+        ),
+        title={
+            'text': f"Gráfico Representativo de las Etapas de Procesamiento de las<br>Presunciones/ Infracciones<br>Lanús- {mes_seleccionado} 2025",
+            'x': 0.5,
+            'xanchor': 'center',
+            'font': dict(color='black')
+        },
+        legend_title_font=dict(color='black'),
+        height=500)
+    return fig
+
+
+def get_tipos_infraccion_actas(data_to_plot, mes_seleccionado):
+    data_to_plot = pd.melt(data_to_plot)
+    data_to_plot = data_to_plot.loc[data_to_plot["value"] > 0]
+    fig = px.pie(data_to_plot, names="variable", values="value")
+    fig.update_traces(
+        textfont=dict(color="black", size=14),
+    )
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color='black'),
+        xaxis=dict(
+            title=dict(font=dict(color='black')),
+            tickfont=dict(color='black'),
+            linecolor='black',
+            gridcolor='rgba(0,0,0,0)',
+        ),
+        yaxis=dict(
+            title=dict(font=dict(color='black')),
+            tickfont=dict(color='black'),
+            linecolor='black',
+            gridcolor='rgba(0,0,0,0)',
+        ),
+        title={
+            'text': f"Cantidad de Actas por tipo de Infracción {mes_seleccionado} 2025- Lanús",
             'x': 0.5,
             'xanchor': 'center',
             'font': dict(color='black')
