@@ -6,7 +6,9 @@ from DataManager.file_reader import get_resumen_mensual_dataframe, get_info_cama
     get_movimientos_juzgados, get_actas_juzgados_bajas, get_valores_infracciones, get_actas_juzgados_altas, \
     get_lotes_en_mes
 from Functions.functions import get_meses_ordenados
-from PlotManager.plot_getter import get_stages_barplot, get_activity_by_judge
+from PlotManager.plot_getter import get_stages_barplot, get_activity_by_judge, get_seaborn_barplot_resumee, \
+    get_seaborn_barplot_judge_activity, get_actas_by_infraccion, get_seaborn_barplot_acta_por_tipo, \
+    get_piechart_payments, get_seaborn_piechart_payments
 
 st.set_page_config(layout="wide")
 cola, colb = st.columns(2)
@@ -110,18 +112,33 @@ with col_center:
     data_to_plot = data_to_plot.reset_index()
     data_to_plot.columns = ["Categoria", "Cantidad"]
     st.plotly_chart(get_stages_barplot(data_to_plot, mes_seleccionado), use_container_width=True)
+    ruta_img_resumen = get_seaborn_barplot_resumee(
+        data_to_plot,
+        mes_seleccionado,
+        output_path=f"SeabornPlots/resumen_general_{mes_seleccionado}.png"
+    )
 st.markdown(f"##### V. Efectividad Recaudatoria {mes_seleccionado} 2025 Berisso.")
 st.markdown(
     "En relación con la generación de ingresos, es importante destacar que los pagos realizados por la cancelación de las infracciones registradas por el sistema de captación de la Universidad Nacional de La Matanza están sujetos a una serie de procedimientos de control para garantizar su adecuada gestión, como así también la integración con los diferentes sistemas de gestión de infracciones Nacionales y Provinciales. Estos procedimientos se traducen en una recopilación detallada de los montos recaudados por el Municipio, los cuales se presentan a continuación en forma de cuadros y gráficos para una mejor comprensión y análisis.A continuación, se detallan los montos recaudados por el Municipio, según los diferentes procedimientos de control aplicados a los pagos efectuados por la cancelación de las infracciones registradas por el sistema de captación de la Universidad Nacional de La Matanza.Estos datos reflejan la eficacia de los procedimientos de control implementados en la gestión de los pagos por cancelación de infracciones, proporcionando una visión clara y precisa de los ingresos generados. La transparencia en la presentación de esta información es fundamental para una adecuada rendición de cuentas y una gestión financiera responsable por parte del Municipio y la Universidad Nacional de la Matanza")
 
 st.markdown("###### V.I Descripción de la producción por punto de Infracción para las cámaras de tipo Semáforo.")
-col_left, col_center, col_right = st.columns([1, 8, 1])
+col_left, col_center, col_right = st.columns([1, 3, 1])
 with col_center:
     st.dataframe(
         infracciones_por_camara_selected.drop(columns=["Año", "Mes", "Valor uf"]).reset_index(drop=True),
         hide_index=True
     )
-
+    data_to_plot = pd.melt(
+        infracciones_por_camara_selected.drop(columns=["Año", "Mes", "Valor uf"]).reset_index(drop=True),
+        id_vars=["Ubicación física", "Tipo de cámara", "Infracciones por mes", "Facturacion por equipo"])
+    st.plotly_chart(get_actas_by_infraccion(
+        data_to_plot,
+        mes_seleccionado=mes_seleccionado))
+    ruta_img_resumen = get_seaborn_barplot_acta_por_tipo(
+        data_to_plot,
+        mes_seleccionado,
+        output_path=f"SeabornPlots/actas_por_infraccion_{mes_seleccionado}.png"
+    )
 st.markdown(f"###### VI Detalle de los medios de pagos utilizados por el municipio de Berisso- {mes_seleccionado} 2025")
 col_left, col_center, col_right = st.columns([1, 2, 1])
 
@@ -129,15 +146,29 @@ with col_center:
     st.dataframe(canales_de_pago_selected.drop(
         columns=["Año", "Mes", "Sugit s/ ga", "Desglose gastos administ bocas de recaudación",
                  "Desglose gastos administ sugit"]).reset_index(drop=True), hide_index=True)
-
+    ruta_img_resumen = get_seaborn_piechart_payments(
+        pd.melt(canales_de_pago_selected.drop(
+            columns=["Año", "Mes", "Sugit s/ ga", "Desglose gastos administ bocas de recaudación",
+                     "Desglose gastos administ sugit", "Total"])),
+        mes_seleccionado,
+        output_path=f"SeabornPlots/piechart_pagos_{mes_seleccionado}.png"
+    )
+    st.plotly_chart(get_piechart_payments(pd.melt(canales_de_pago_selected.drop(columns = ["Año", "Mes", "Sugit s/ ga", "Desglose gastos administ bocas de recaudación",
+                 "Desglose gastos administ sugit","Total"])),mes_seleccionado))
 st.markdown(f"##### VII. Detalles de actas del mes de - {mes_seleccionado} 2025")
 st.markdown(f"###### VII.I Detalle de Actividad de los Juzgados Mes de {mes_seleccionado} 2025")
 col_left, col_center, col_right = st.columns([1, 2, 1])
 with col_center:
-    st.dataframe(movimientos_juzgados_selected.drop(columns=["Año", "Mes"]), hide_index=True)
+    st.dataframe(movimientos_juzgados_selected.drop(columns=["Año", "Mes", "Cantidad/ con fallo"]), hide_index=True)
     data_to_plot = pd.melt(movimientos_juzgados_selected.drop(columns=["Año", "Mes"]), id_vars="Juzgado",
                            var_name="Etapa", value_name="Cantidad")
     data_to_plot["Juzgado"] = "Juzgado " + data_to_plot["Juzgado"].astype(str)
+    data_to_plot = data_to_plot.loc[data_to_plot["Etapa"] != "Cantidad/ con fallo"]
+    ruta_img_resumen = get_seaborn_barplot_judge_activity(
+        data_to_plot,
+        mes_seleccionado,
+        output_path=f"SeabornPlots/actividad_juzgados_{mes_seleccionado}.png"
+    )
     st.plotly_chart(get_activity_by_judge(data_to_plot, mes_seleccionado), use_container_width=True)
 
 st.markdown("###### VII.II Detalle del SUGIT.")

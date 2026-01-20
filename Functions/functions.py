@@ -1,4 +1,6 @@
 import pandas as pd
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Inches
 
 
 def get_meses_ordenados():
@@ -151,6 +153,13 @@ def generar_docx_informe(
         for i, col in enumerate(df.columns):
             c[i].text = str(row[col])
 
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    run = p.add_run()
+    run.add_picture(f"SeabornPlots/resumen_general_{mes_seleccionado}.png", width=Inches(6))
+
+    doc.add_paragraph("")
     # =====================================================
     # V. EFECTIVIDAD RECAUDATORIA
     # =====================================================
@@ -183,6 +192,11 @@ def generar_docx_informe(
         c = tabla.add_row().cells
         for i, col in enumerate(df.columns):
             c[i].text = str(row[col])
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    run = p.add_run()
+    run.add_picture(f"SeabornPlots/actas_por_infraccion_{mes_seleccionado}.png", width=Inches(6))
 
     # =====================================================
     # VI. MEDIOS DE PAGO
@@ -212,6 +226,11 @@ def generar_docx_informe(
         c = tabla.add_row().cells
         for i, col in enumerate(df.columns):
             c[i].text = str(row[col])
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    run = p.add_run()
+    run.add_picture(f"SeabornPlots/piechart_pagos_{mes_seleccionado}.png", width=Inches(6))
 
     # =====================================================
     # VII. JUZGADOS
@@ -242,7 +261,11 @@ def generar_docx_informe(
         c = tabla.add_row().cells
         for i, col in enumerate(df.columns):
             c[i].text = str(row[col])
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
+    run = p.add_run()
+    run.add_picture(f"SeabornPlots/actividad_juzgados_{mes_seleccionado}.png", width=Inches(6))
     # VII.II SUGIT altas
     doc.add_heading("VII.II Detalle del SUGIT", level=2)
     tabla = doc.add_table(rows=1, cols=3)
