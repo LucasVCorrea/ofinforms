@@ -7,7 +7,9 @@ def get_resumen_mensual_dataframe():
     df = pd.read_csv(
         "Files/Book 10(resumen_mensuales).csv",
         encoding="latin-1",
-        sep=";"
+        sep=";",
+    thousands=".",
+    decimal=","
     )
 
     # Normalizar Mes
@@ -23,7 +25,9 @@ def get_info_camaras():
     df = pd.read_csv(
         "Files/Book 10(info_camaras).csv",
         encoding="latin-1",
-        sep=";"
+        sep=";",
+    thousands=".",
+    decimal=","
     )
 
     # Normalizar columnas
@@ -46,7 +50,9 @@ def get_info_camaras():
 def get_resumen_infracciones():
     df = pd.read_csv(
         "Files/Book 10(resumen_infracciones).csv",
-        encoding="latin-1", sep=";"
+        encoding="latin-1", sep=";",
+    thousands=".",
+    decimal=","
     )
     df.columns = df.columns.str.capitalize().str.strip()
     df["Mes"] = df["Mes"].str.capitalize().str.strip()
@@ -57,7 +63,9 @@ def get_resumen_infracciones():
 def get_infracciones_por_camara():
     df = pd.read_csv(
         "Files/Book 10(infracciones_por_camara).csv",
-        encoding="latin-1", sep=";"
+        encoding="latin-1", sep=";",
+    thousands=".",
+    decimal=","
     )
     df.columns = df.columns.str.capitalize().str.strip()
     df["Mes"] = df["Mes"].str.capitalize().str.strip()
@@ -68,7 +76,9 @@ def get_infracciones_por_camara():
 def get_recaudacion_detallada():
     df = pd.read_csv(
         "Files/Book 10(recaudacion).csv",
-        encoding="latin-1", sep=";"
+        encoding="latin-1", sep=";",
+    thousands=".",
+    decimal=","
     )
     df.columns = df.columns.str.capitalize().str.strip()
     df["Mes"] = df["Mes"].str.capitalize().str.strip()
@@ -79,7 +89,9 @@ def get_recaudacion_detallada():
 def get_canales_de_pago():
     df = pd.read_csv(
         "Files/Book 10(canales_de_pago).csv",
-        encoding="latin-1", sep=";"
+        encoding="latin-1", sep=";",
+    thousands=".",
+    decimal=","
     )
     df.columns = df.columns.str.capitalize().str.strip()
     df["Mes"] = df["Mes"].str.capitalize().str.strip()
@@ -90,7 +102,9 @@ def get_canales_de_pago():
 def get_recaudacion():
     df = pd.read_csv(
         "Files/Book 10(recaudacion).csv",
-        encoding="latin-1", sep=";"
+        encoding="latin-1", sep=";",
+    thousands=".",
+    decimal=","
     )
     df.columns = df.columns.str.capitalize().str.strip()
     df["Mes"] = df["Mes"].str.capitalize().str.strip()
@@ -101,7 +115,9 @@ def get_recaudacion():
 def get_movimientos_juzgados():
     df = pd.read_csv(
         "Files/Book 10(movimientos_juzgados).csv",
-        encoding="latin-1", sep=";"
+        encoding="latin-1", sep=";",
+    thousands=".",
+    decimal=","
     )
     df.columns = df.columns.str.capitalize().str.strip()
     df["Mes"] = df["Mes"].str.capitalize().str.strip()
@@ -112,7 +128,9 @@ def get_movimientos_juzgados():
 def get_actas_juzgados_bajas():
     df = pd.read_csv(
         "Files/Book 10(actas_juzgados_bajas).csv",
-        encoding="latin-1", sep=";"
+        encoding="latin-1", sep=";",
+    thousands=".",
+    decimal=","
     )
     df.columns = df.columns.str.capitalize().str.strip()
     df["Mes"] = df["Mes"].str.capitalize().str.strip()
@@ -123,7 +141,9 @@ def get_actas_juzgados_bajas():
 def get_actas_juzgados_altas():
     df = pd.read_csv(
         "Files/Book 10(actas_juzgados_altas).csv",
-        encoding="latin-1", sep=";"
+        encoding="latin-1", sep=";",
+    thousands=".",
+    decimal=","
     )
     df.columns = df.columns.str.capitalize().str.strip()
     df["Mes"] = df["Mes"].str.capitalize().str.strip()
@@ -135,7 +155,9 @@ def get_actas_juzgados_altas():
 def get_valores_infracciones():
     df = pd.read_csv(
         "Files/Book 10(valores_infracciones).csv",
-        encoding="latin-1", sep=";"
+        encoding="latin-1", sep=";",
+    thousands=".",
+    decimal=","
     )
     # df.columns = df.columns.str.capitalize().str.strip()
     df["Mes"] = df["Mes"].str.capitalize().str.strip()

@@ -11,13 +11,17 @@ from PlotManager.plot_getter import get_stages_barplot, get_activity_by_judge, g
     get_piechart_payments, get_seaborn_piechart_payments, get_barplot_etapas_lanus, get_tipos_infraccion_actas, \
     get_tipos_camaras_actas
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_title="Informes Oficina")
 cola, colb = st.columns(2)
 cliente = st.selectbox("Seleccione el cliente", options=["Berisso", "Lanus"])
 
 mes_seleccionado = cola.selectbox("Seleccione una opción", options=get_meses_ordenados(), key="opcion_seleccionada")
 if cliente == "Berisso":
-
+    def limpiar_formato_numerico(df):
+        return df.applymap(
+            lambda x: x.replace(".", "").replace(",", ".")
+            if isinstance(x, str) else x
+        )
     resumen_infracciones = get_resumen_infracciones()
     resumen_general = get_resumen_mensual_dataframe()
     infracciones_por_camara = get_infracciones_por_camara()
@@ -29,6 +33,18 @@ if cliente == "Berisso":
     actas_juzgados_altas = get_actas_juzgados_altas()
     valores_infracciones = get_valores_infracciones()
     info_camaras = get_info_camaras()
+
+    resumen_infracciones = limpiar_formato_numerico(resumen_infracciones)
+    resumen_general = limpiar_formato_numerico(resumen_general)
+    infracciones_por_camara = limpiar_formato_numerico(infracciones_por_camara)
+    recaudacion_detallada = limpiar_formato_numerico(recaudacion_detallada)
+    canales_de_pago = limpiar_formato_numerico(canales_de_pago)
+    recaudacion = limpiar_formato_numerico(recaudacion)
+    movimientos_juzgados = limpiar_formato_numerico(movimientos_juzgados)
+    actas_juzgados_bajas = limpiar_formato_numerico(actas_juzgados_bajas)
+    actas_juzgados_altas = limpiar_formato_numerico(actas_juzgados_altas)
+    valores_infracciones = limpiar_formato_numerico(valores_infracciones)
+    info_camaras = limpiar_formato_numerico(info_camaras)
 
     resumen_infracciones_selected = (resumen_infracciones.loc[resumen_infracciones["Mes"] == mes_seleccionado])
     resumen_general_selected = (resumen_general.loc[resumen_general["Mes"] == mes_seleccionado])

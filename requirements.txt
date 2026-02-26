@@ -18,3 +18,4 @@ streamlit-extras
 protobuf~=5.29.4
 
 pytz~=2025.2
+python-docx
